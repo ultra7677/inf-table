@@ -61,7 +61,7 @@ const InfTable: FunctionComponent = () => {
   function generateRow(count: number, len: number) {
     let newList = [];
     for (let i = 0; i < count; i++) {
-      let row = columnList.reduce(
+      let row: { [key: string]: string } = columnList.reduce(
         (pre, cur) =>
           Object.assign(
             {
@@ -74,6 +74,14 @@ const InfTable: FunctionComponent = () => {
       newList.push(Object.assign({ index: i + len }, row));
     }
     return newList;
+  }
+
+  // Search a column based on user provided string
+  function scrollBySearching(columnName: string, searchString: string) {
+    let result = list.filter(value =>
+      value[columnName].startsWith(searchString)
+    );
+    console.log(result);
   }
 
   function nextKey(dataKey: string): string {
@@ -144,7 +152,6 @@ const InfTable: FunctionComponent = () => {
   const [list, setList] = useState(generateRow(10, 0));
   const [screenWidth, setScreenWidth] = useState(0);
   const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
-
   return (
     <InfiniteLoader
       isRowLoaded={isRowLoaded}
@@ -155,32 +162,34 @@ const InfTable: FunctionComponent = () => {
         <AutoSizer>
           {({ width, height }: Size) => {
             setScreenWidth(width);
-            console.log(width);
             return (
-              <Table
-                width={width}
-                height={height}
-                headerHeight={40}
-                rowHeight={40}
-                rowCount={list.length}
-                rowGetter={({ index }) => list[index]}
-                onRowsRendered={onRowsRendered}
-                onRowClick={onRowClick}
-                rowClassName={rowClassName}
-                headerClassName="headerColumn"
-                ref={registerChild}
-              >
-                <Column label="Index" dataKey="index" width={50} />
-                {columnList.map(column => (
-                  <Column
-                    label={column.name}
-                    dataKey={column.name}
-                    width={(width - 70) * columnRatio[column.name]}
-                    key={column.name}
-                    headerRenderer={columnHeaderRender}
-                  ></Column>
-                ))}
-              </Table>
+              <div>
+                <p>lalala</p>
+                <Table
+                  width={width}
+                  height={height}
+                  headerHeight={40}
+                  rowHeight={40}
+                  rowCount={list.length}
+                  rowGetter={({ index }) => list[index]}
+                  onRowsRendered={onRowsRendered}
+                  onRowClick={onRowClick}
+                  rowClassName={rowClassName}
+                  headerClassName="headerColumn"
+                  ref={registerChild}
+                >
+                  <Column label="Index" dataKey="index" width={50} />
+                  {columnList.map(column => (
+                    <Column
+                      label={column.name}
+                      dataKey={column.name}
+                      width={(width - 70) * columnRatio[column.name]}
+                      key={column.name}
+                      headerRenderer={columnHeaderRender}
+                    ></Column>
+                  ))}
+                </Table>
+              </div>
             );
           }}
         </AutoSizer>
