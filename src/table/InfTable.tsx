@@ -13,15 +13,7 @@ import {
 import Draggable from "react-draggable";
 import "./InfTable.css";
 import styled from "styled-components";
-
-// Fake Data
-const columnList = [
-  { name: "column1", length: 30 },
-  { name: "column2", length: 40 },
-  { name: "column3", length: 100 },
-  { name: "column4", length: 20 },
-  { name: "column5", length: 20 }
-];
+import axios from "axios";
 
 // Stype Component CSS
 const DragHandleIcon = styled.span`
@@ -33,17 +25,34 @@ const DragHandleIcon = styled.span`
   transform: none !important;
 `;
 
+// Props
+interface TableProps {
+  columnList: {
+    name: string;
+    length: number;
+  }[];
+  tableName: string;
+}
+
 // Functional Component
-const InfTable: FunctionComponent = () => {
+const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
   function isRowLoaded({ index }: Index) {
     return !!list[index];
   }
 
   function loadMoreRows({ startIndex, stopIndex }: IndexRange) {
     return new Promise((resolve, reject) => {
-      let newList = [...list].concat(generateRow(10, list.length));
-      setList(newList);
-      resolve();
+      console.log(`Loading from ${stopIndex} to ${stopIndex}`);
+      async function fetchData() {
+        const response = await axios(
+          `http://localhost:8080/api/loadRows?startIndex=${startIndex}&endIndex=${stopIndex}`
+        );
+        console.log(response);
+        let newList = [...list].concat(response.data.data);
+        setList(newList);
+        resolve();
+      }
+      fetchData();
     });
   }
 
@@ -149,7 +158,9 @@ const InfTable: FunctionComponent = () => {
     );
   }
 
-  const [list, setList] = useState(generateRow(10, 0));
+  const [list, setList] = useState<
+    ({ index: number } & { [key: string]: string })[]
+  >([]);
   const [screenWidth, setScreenWidth] = useState(0);
   const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
   return (
@@ -164,7 +175,7 @@ const InfTable: FunctionComponent = () => {
             setScreenWidth(width);
             return (
               <div>
-                <p>lalala</p>
+                <p>{tableName}</p>
                 <Table
                   width={width}
                   height={height}
