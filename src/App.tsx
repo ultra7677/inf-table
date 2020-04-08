@@ -32,6 +32,19 @@ const ContentContainer: ContainerProps = {
   background: "white"
 };
 
+const themes = {
+  light: {
+    foreground: "#000000",
+    background: "#eeeeee"
+  },
+  dark: {
+    foreground: "#ffffff",
+    background: "#222222"
+  }
+};
+
+export const ThemeContext = React.createContext(themes.light);
+
 const App: React.FC = () => {
   const [columns, setColumns] = useState([{ name: "", length: 0 }]);
   // Fake Data
@@ -48,21 +61,23 @@ const App: React.FC = () => {
   // API Call
   useEffect(() => {
     async function fetchData() {
-      const response = await axios(
-        `http://localhost:8080/api/getColumnInfo?tableName=${tableName}`
-      );
-      console.log(response);
-      setColumns(response.data.columnList);
+      // const response = await axios(
+      //   `http://localhost:8080/api/getColumnInfo?tableName=${tableName}`
+      // );
+      // console.log(response);
+      // setColumns(response.data.columnList);
     }
     fetchData();
   }, []);
 
   return (
-    <div className="App">
-      <Container className="App-Content" {...ContentContainer}>
-        <InfTable columnList={columns} tableName={tableName} />
-      </Container>
-    </div>
+    <ThemeContext.Provider value={themes.dark}>
+      <div className="App">
+        <Container className="App-Content" {...ContentContainer}>
+          <InfTable columnList={columnList} tableName={tableName} />
+        </Container>
+      </div>
+    </ThemeContext.Provider>
   );
 };
 

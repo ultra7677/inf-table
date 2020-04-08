@@ -1,5 +1,10 @@
 /* eslint-disable no-restricted-globals */
-import React, { useState, useEffect, FunctionComponent } from "react";
+import React, {
+  useState,
+  useEffect,
+  FunctionComponent,
+  useContext,
+} from "react";
 import {
   InfiniteLoader,
   Table,
@@ -8,12 +13,14 @@ import {
   Column,
   TableHeaderProps,
   AutoSizer,
-  Size
+  Size,
 } from "react-virtualized";
 import Draggable from "react-draggable";
 import "./InfTable.css";
 import styled from "styled-components";
 import axios from "axios";
+import { ThemeContext } from "../App";
+import useScreenWidth from "../shared/UseScreenWidth";
 
 // Stype Component CSS
 const DragHandleIcon = styled.span`
@@ -36,6 +43,13 @@ interface TableProps {
 
 // Functional Component
 const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
+  const themeContext = useContext(ThemeContext);
+  const [list, setList] = useState<
+    ({ index: number } & { [key: string]: string })[]
+  >(generateRow(10, 10));
+  const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
+  let screenWidth = useScreenWidth();
+
   function isRowLoaded({ index }: Index) {
     return !!list[index];
   }
@@ -74,7 +88,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
         (pre, cur) =>
           Object.assign(
             {
-              [cur.name]: makeid(cur.length)
+              [cur.name]: makeid(cur.length),
             },
             pre
           ),
@@ -87,7 +101,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
 
   // Search a column based on user provided string
   function scrollBySearching(columnName: string, searchString: string) {
-    let result = list.filter(value =>
+    let result = list.filter((value) =>
       value[columnName].startsWith(searchString)
     );
     console.log(result);
@@ -146,7 +160,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
               let newColumnRatio = {
                 ...columnRatio,
                 [dataKey]: columnRatio[dataKey] + deltaRatio,
-                [nextKey(dataKey)]: columnRatio[nextKey(dataKey)] - deltaRatio
+                [nextKey(dataKey)]: columnRatio[nextKey(dataKey)] - deltaRatio,
               };
               setColumnRatio(newColumnRatio);
             }}
@@ -158,11 +172,6 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
     );
   }
 
-  const [list, setList] = useState<
-    ({ index: number } & { [key: string]: string })[]
-  >([]);
-  const [screenWidth, setScreenWidth] = useState(0);
-  const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
   return (
     <InfiniteLoader
       isRowLoaded={isRowLoaded}
@@ -170,40 +179,33 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
       rowCount={1000}
     >
       {({ onRowsRendered, registerChild }) => (
-        <AutoSizer>
-          {({ width, height }: Size) => {
-            setScreenWidth(width);
-            return (
-              <div>
-                <p>{tableName}</p>
-                <Table
-                  width={width}
-                  height={height}
-                  headerHeight={40}
-                  rowHeight={40}
-                  rowCount={list.length}
-                  rowGetter={({ index }) => list[index]}
-                  onRowsRendered={onRowsRendered}
-                  onRowClick={onRowClick}
-                  rowClassName={rowClassName}
-                  headerClassName="headerColumn"
-                  ref={registerChild}
-                >
-                  <Column label="Index" dataKey="index" width={50} />
-                  {columnList.map(column => (
-                    <Column
-                      label={column.name}
-                      dataKey={column.name}
-                      width={(width - 70) * columnRatio[column.name]}
-                      key={column.name}
-                      headerRenderer={columnHeaderRender}
-                    ></Column>
-                  ))}
-                </Table>
-              </div>
-            );
-          }}
-        </AutoSizer>
+        <div>
+          <p>{tableName}</p>
+          <Table
+            width={screenWidth}
+            height={window.innerHeight - 80}
+            headerHeight={40}
+            rowHeight={40}
+            rowCount={list.length}
+            rowGetter={({ index }) => list[index]}
+            onRowsRendered={onRowsRendered}
+            onRowClick={onRowClick}
+            rowClassName={rowClassName}
+            headerClassName="headerColumn"
+            ref={registerChild}
+          >
+            <Column label="Index" dataKey="index" width={50} />
+            {columnList.map((column) => (
+              <Column
+                label={column.name}
+                dataKey={column.name}
+                width={(screenWidth - 70) * columnRatio[column.name]}
+                key={column.name}
+                headerRenderer={columnHeaderRender}
+              ></Column>
+            ))}
+          </Table>
+        </div>
       )}
     </InfiniteLoader>
   );
