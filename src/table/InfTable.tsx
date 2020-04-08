@@ -44,9 +44,7 @@ interface TableProps {
 // Functional Component
 const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
   const themeContext = useContext(ThemeContext);
-  const [list, setList] = useState<
-    ({ index: number } & { [key: string]: string })[]
-  >(generateRow(10, 10));
+  const [list, setList] = useState<{ [key: string]: string }[]>([]);
   const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
   let screenWidth = useScreenWidth();
 

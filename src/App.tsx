@@ -17,9 +17,9 @@ type ContainerProps = {
  */
 
 const Container = styled.div<ContainerProps>`
-  height: ${props => props.height};
-  width: ${props => props.width};
-  background: ${props => props.background};
+  height: ${(props) => props.height};
+  width: ${(props) => props.width};
+  background: ${(props) => props.background};
 `;
 
 /**
@@ -29,18 +29,18 @@ const Container = styled.div<ContainerProps>`
 const ContentContainer: ContainerProps = {
   height: "95vh",
   width: "100%",
-  background: "white"
+  background: "white",
 };
 
 const themes = {
   light: {
     foreground: "#000000",
-    background: "#eeeeee"
+    background: "#eeeeee",
   },
   dark: {
     foreground: "#ffffff",
-    background: "#222222"
-  }
+    background: "#222222",
+  },
 };
 
 export const ThemeContext = React.createContext(themes.light);
@@ -53,7 +53,7 @@ const App: React.FC = () => {
     { name: "column2", length: 40 },
     { name: "column3", length: 100 },
     { name: "column4", length: 20 },
-    { name: "column5", length: 20 }
+    { name: "column5", length: 20 },
   ];
 
   const tableName = "fixdata";
@@ -61,11 +61,11 @@ const App: React.FC = () => {
   // API Call
   useEffect(() => {
     async function fetchData() {
-      // const response = await axios(
-      //   `http://localhost:8080/api/getColumnInfo?tableName=${tableName}`
-      // );
-      // console.log(response);
-      // setColumns(response.data.columnList);
+      const response = await axios(
+        `http://localhost:8080/api/getColumnInfo?tableName=${tableName}`
+      );
+      console.log(response);
+      setColumns(response.data.columnList);
     }
     fetchData();
   }, []);
@@ -74,7 +74,7 @@ const App: React.FC = () => {
     <ThemeContext.Provider value={themes.dark}>
       <div className="App">
         <Container className="App-Content" {...ContentContainer}>
-          <InfTable columnList={columnList} tableName={tableName} />
+          <InfTable columnList={columns} tableName={tableName} />
         </Container>
       </div>
     </ThemeContext.Provider>
