@@ -48,6 +48,19 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
   const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
   let screenWidth = useScreenWidth();
 
+  // Initial API Call to load 10 rows
+  useEffect(() => {
+    async function fetchData() {
+      const response = await axios(
+        `http://localhost:8080/api/loadRows?startIndex=${0}&endIndex=${10}`
+      );
+      console.log(response);
+      let newList = [...list].concat(response.data.data);
+      setList(newList);
+    }
+    fetchData();
+  }, []);
+
   function isRowLoaded({ index }: Index) {
     return !!list[index];
   }
@@ -192,7 +205,6 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
             headerClassName="headerColumn"
             ref={registerChild}
           >
-            <Column label="Index" dataKey="index" width={50} />
             {columnList.map((column) => (
               <Column
                 label={column.name}
