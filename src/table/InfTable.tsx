@@ -55,7 +55,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
         `http://localhost:8080/api/loadRows?startIndex=${0}&endIndex=${10}`
       );
       console.log(response);
-      let newList = [...list].concat(response.data.data);
+      let newList = [...list].concat(response.data);
       setList(newList);
     }
     fetchData();
@@ -73,7 +73,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
           `http://localhost:8080/api/loadRows?startIndex=${startIndex}&endIndex=${stopIndex}`
         );
         console.log(response);
-        let newList = [...list].concat(response.data.data);
+        let newList = [...list].concat(response.data);
         setList(newList);
         resolve();
       }

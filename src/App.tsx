@@ -65,7 +65,7 @@ const App: React.FC = () => {
         `http://localhost:8080/api/getColumnInfo?tableName=${tableName}`
       );
       console.log(response);
-      setColumns(response.data.columnList);
+      setColumns(response.data);
     }
     fetchData();
   }, []);
