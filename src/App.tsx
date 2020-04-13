@@ -74,7 +74,7 @@ const App: React.FC = () => {
     <ThemeContext.Provider value={themes.dark}>
       <div className="App">
         <Container className="App-Content" {...ContentContainer}>
-          <InfTable columnList={columnList} tableName={tableName} />
+          <InfTable columnList={columnList} />
         </Container>
       </div>
     </ThemeContext.Provider>

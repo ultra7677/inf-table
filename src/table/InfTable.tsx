@@ -31,13 +31,12 @@ interface TableProps {
     name: string;
     length: number;
   }[];
-  tableName: string;
 }
 
 // Functional Component
-const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
+const InfTable: FunctionComponent<TableProps> = ({ columnList }) => {
   const [list, setList] = useState<{ [key: string]: string | number }[]>(
-    generateRow(10, 10)
+    generateRow(10, 1)
   );
   const [columnRatio, setColumnRatio] = useState(calculateRatio(columnList));
   let screenWidth = useScreenWidth();
@@ -132,7 +131,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
             defaultClassName="DragHandle"
             position={{ x: 0, y: 0 }}
             onDrag={(e, data) => {
-              let deltaRatio = data.deltaX / (screenWidth - 60);
+              let deltaRatio = data.deltaX / (screenWidth - 80);
               let newColumnRatio = {
                 ...columnRatio,
                 [dataKey]: columnRatio[dataKey] + deltaRatio,
@@ -158,7 +157,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
         <div>
           <Table
             width={screenWidth - 10}
-            height={window.innerHeight - 20}
+            height={window.innerHeight - 10}
             headerHeight={40}
             rowHeight={40}
             rowCount={list.length}
@@ -169,11 +168,12 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
             headerClassName="headerColumn"
             ref={registerChild}
           >
+            <Column label="Index" dataKey="index" width={70} />
             {columnList.map((column) => (
               <Column
                 label={column.name}
                 dataKey={column.name}
-                width={(screenWidth - 60) * columnRatio[column.name]}
+                width={(screenWidth - 80) * columnRatio[column.name]}
                 key={column.name}
                 headerRenderer={columnHeaderRender}
               ></Column>
