@@ -167,7 +167,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
             defaultClassName="DragHandle"
             position={{ x: 0, y: 0 }}
             onDrag={(e, data) => {
-              let deltaRatio = data.deltaX / (screenWidth - 70);
+              let deltaRatio = data.deltaX / (screenWidth - 60);
               let newColumnRatio = {
                 ...columnRatio,
                 [dataKey]: columnRatio[dataKey] + deltaRatio,
@@ -192,7 +192,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
       {({ onRowsRendered, registerChild }) => (
         <div>
           <Table
-            width={screenWidth}
+            width={screenWidth - 10}
             height={window.innerHeight - 20}
             headerHeight={40}
             rowHeight={40}
@@ -208,7 +208,7 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
               <Column
                 label={column.name}
                 dataKey={column.name}
-                width={(screenWidth - 70) * columnRatio[column.name]}
+                width={(screenWidth - 60) * columnRatio[column.name]}
                 key={column.name}
                 headerRenderer={columnHeaderRender}
               ></Column>
