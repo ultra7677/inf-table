@@ -191,10 +191,9 @@ const InfTable: FunctionComponent<TableProps> = ({ columnList, tableName }) => {
     >
       {({ onRowsRendered, registerChild }) => (
         <div>
-          <p>{tableName}</p>
           <Table
             width={screenWidth}
-            height={window.innerHeight - 80}
+            height={window.innerHeight - 20}
             headerHeight={40}
             rowHeight={40}
             rowCount={list.length}
