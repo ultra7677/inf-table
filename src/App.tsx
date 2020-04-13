@@ -49,11 +49,16 @@ const App: React.FC = () => {
   const [columns, setColumns] = useState([{ name: "", length: 0 }]);
   // Fake Data
   const columnList = [
-    { name: "column1", length: 30 },
-    { name: "column2", length: 40 },
-    { name: "column3", length: 100 },
-    { name: "column4", length: 20 },
-    { name: "column5", length: 20 },
+    { name: "index", length: 5 },
+    { name: "transacttime", length: 10 },
+    { name: "stocksymbol", length: 5 },
+    { name: "clordid", length: 15 },
+    { name: "msgtype", length: 5 },
+    { name: "orderqty", length: 5 },
+    { name: "leavesqty", length: 10 },
+    { name: "cumqty", length: 10 },
+    { name: "avgpx", length: 10 },
+    { name: "lastupdated", length: 10 },
   ];
 
   const tableName = "fixdata";
