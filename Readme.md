@@ -1,21 +1,46 @@
 ### Inf-Table
-Pure front-end Table component with infinite scrolling.  
+
+Pure front-end Table component with infinite scrolling.
+
 >
+
     Typescript + React + Styled Component + Hooks + React-Virtualized
 
 To run this app
+
 >
+
     npm start
 
+### Why Typescript
+
+### Why Hooks
+
+- Classes are hard for humans/machines
+- Reusing logic
+  - Higher-order components
+  - Render props
+- Giant components
+  - componentDidMount/WillMount
+
+useState is a hook. a function provided by React to access React component's state
+
+### Why Styled Component
+
 Back End API:
+
 #### getColumnInfo
+
 [HTTP Get]
 Request:
 
-    one parameter, tableName 
+    one parameter, tableName
     .../api/getColumnInfo?tableName=XXX
+
 Response:
+
 >
+
     {
         columnList : [
             {
@@ -26,8 +51,8 @@ Response:
         ]
     }
 
-
 #### loadRows
+
 [HTTP Get]
 Request:
 
@@ -47,5 +72,3 @@ Response:
             ...
         ]
     }
-
-
