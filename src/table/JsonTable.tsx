@@ -1,181 +1,217 @@
-import { type } from "os";
-import React, { FunctionComponent } from "react";
+
+import React, { Children, FunctionComponent, ObjectHTMLAttributes } from "react";
 import './JsonTable.css'
 
 const json_data = {
-    "id": "0001",
-    "type": "donut",
-    "name": "Cake",
-    "ppu": 0.55,
-    "batters":
-      {
-        "batter":
-          [
-            { "id": "1001", "type": "Regular" },
-            { "id": "1001", "type": "Regular", "test": "test", "arr": ["123", "456", "789"] },
-            { "id": "1002", "type": "Chocolate" },
-            { "id": "1003", "type": "Blueberry" },
-            { "id": "1004", "type": "Devil's Food" }
-          ]
-      },
-    "topping":
+  "id": "0001",
+  "type": "donut",
+  "name": "Cake",
+  "ppu": 0.55,
+  "batters":
+  {
+    "batter":
       [
-        { "id": "5001", "type": "None" },
-        { "id": "5002", "type": "Glazed" },
-        { "id": "5005", "type": "Sugar" },
-        { "id": "5007", "type": "Powdered Sugar" },
-        { "id": "5006", "type": "Chocolate with Sprinkles" },
-        { "id": "5003", "type": "Chocolate" },
-        { "id": "5004", "type": "Maple" }
+        { "id": "1001", "type": "Regular" },
+        { "id": "1001", "type": "Regular" },
+        { "id": "1002", "type": "Chocolate" },
+        { "id": "1003", "type": "Blueberry" },
+        { "id": "1004", "type": "Devil's Food" }
       ]
-  }
-  const data = [
+  },
+  "topping":
+    [
+      { "id": "5001", "type": "None" },
+      { "id": "5002", "type": "Glazed" },
+      { "id": "5005", "type": "Sugar" },
+      { "id": "5007", "type": "Powdered Sugar" },
+      { "id": "5006", "type": "Chocolate with Sprinkles" },
+      { "id": "5003", "type": "Chocolate" },
+      { "id": "5004", "type": "Maple" }
+    ]
+}
+const data =
+{
+  name: 'Jim',
+  age: 18,
+  courses: [
     {
-      name: 'Jim',
-      age: 18,
-      courses: [
-        { title: 'English', score: 87 },
-        { title: 'Chinese', score: 67 }
-      ]
+      title: 'English', score: 87, extra: {
+        key1: 'value1',
+        key2: [
+          {
+            id: 123,
+            name: 'test1'
+          },
+          {
+            id: 123,
+            name: 'test1'
+          }, {
+            id: 123,
+            name: 'test1',
+            extra: [1, 2, 3, { k: 'v' }]
+          },
+        ]
+      }
     },
-    {
-      name: 'Lucy',
-      age: 17,
-      courses: [
-        { title: 'Math', score: 97 },
-        { title: 'Music', score: 77 },
-        { title: 'Gym', score: 57 }
-      ]
-    }
+    { title: 'Chinese', score: 67, extra1: [123, 456, 789] }
   ]
+}
 
-const isPrimitive = (arr: any) => {
+const long = {
+  key: 'value1',
+  key1: 'value1',
+  key2: 'value1',
+  key3: 'value1',
+  key4: 'value1',
+  key5: 'value1',
+  key6: 'value1',
+  key7: 'value1',
+}
+
+const row1 = [
+  {
+    key1: 'value1',
+    key2: 'value2',
+
+  },
+  {
+    key1: 'value1',
+    key2: 'value2',
+
+  },
+  {
+    key1: 'value1',
+    key2: 'value2',
+    arr: [1, 2, 3]
+  },
+]
+
+const isPrimitive = (element: any) => {
   let flag = true
-  for (let element of arr) {
-    flag = flag && (element !== Object(element))  
+  for (let e of element) {
+    flag = flag && (e !== Object(e))
   }
   return flag
-} 
-  
+}
+
+const isPrimitiveElement = (e: any) => {
+  return (e !== Object(e))
+}
+
+// get all the key of a object list
+const getKeys = (arr: any) => {
+  let s = new Set()
+  for (const e of arr) {
+    if (!isPrimitiveElement(e))
+      for (const key of Object.keys(e)) {
+        s.add(key)
+      }
+  }
+  return s
+}
+
+// Make sure each object in the arr has key in set keys
+const matchWithKeys = (arr: any, keys: Set<unknown>) => {
+  for (let element of arr) {
+    for (let key of keys) {
+      if (!element.hasOwnProperty(key)) {
+        element = Object.assign(element, { [key as string]: null })
+      } else {
+        element = Object.assign(element)
+      }
+    }
+  }
+  return arr
+}
+
+// console.log(matchWithKeys(row1, getKeys(row1)))
+
+
+
 const JsonTable: FunctionComponent<any> = () => {
 
-    const JSONToHTMLTable = (props:any) => {
-        const { data, wrapperClassName, tableClassName } = props
-        return (
-          <div className={wrapperClassName}>
-            <table className={tableClassName}>
-              <tbody>
-                {Object.keys(data).map((k) => (
-                  <tr key={k}>
-                    {!Array.isArray(data)
-                      && <td>{k.replace(/_/g, ' ')}</td>}
-                    {(() => {
-                      if (data[k] && typeof data[k] === 'object') {
-                        return (
-                          <td>
-                            <JSONToHTMLTable data={data[k]} tableClassName={tableClassName} />
-                          </td>
-                        )
-                      }
-                      return (
-                        <td>
-                          <span dangerouslySetInnerHTML={{ __html: data[k] }} />
-                        </td>
-                      )
-                    })()}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )
+  const renderElement = (element: any) => {
+    let child
+    if (isPrimitiveElement(element)) {
+      child = <td key={element}>{element}</td>
     }
-    
-    const ArrayToTable = (data: any, flag = false) => {
-      // // Assume objects in the array are same shape
-      if (flag) {
-        const proto_object = data[0]
-        if (typeof proto_object === 'object') {
-          const keys = Object.keys(proto_object)
-          const values = data.map((item: any) => 
-            <tr>
-              {JsonToTable(Object.values(item), true)}
-            </tr>
-          )
-          return (
-            <React.Fragment>
-              <tr>
-                {keys.map(key => <td>{key}</td>)}
-              </tr>
-              {values}
-            </React.Fragment>
-          )  
-        } else {
-          return data.map((item:any) => <td>{item}</td>)
-        }
+    else {
+      if (Array.isArray(element)) {
+        matchWithKeys(element, getKeys(element))
+        child = <td key={getKeys(element).keys.toString()}>{renderRowVertical(element)}</td>
       }
       else {
-        console.log(data, isPrimitive(data))
-        if (isPrimitive(data)) {
-          return data.map((item:any) => <tr> <td>{item}</td> </tr>)
-        }
-        else {
-          return data.map((item:any) => <tr> <td>{JsonToTable(item)}</td> </tr>)
-        }
+        child = renderObject(element)
       }
     }
+    return child
+  }
 
+  const renderObject = (element: any) => {
+    let keys = Object.keys(element)
+    let values = Object.values(element)
+    return <td key={element}>
+      {
+        renderTable(<React.Fragment>
+          <tr className="tr_columns">{renderRowHorizontal(keys)}</tr>
+          <tr>{renderRowHorizontal(values)}</tr>
+        </React.Fragment>)
+      }
+    </td>
+  }
 
-    
-    const JsonToTable = (data: any, flag = false) => {
-      if (Array.isArray(data)) {
-        return ArrayToTable(data, flag)
+  const renderTable = (child: any) => {
+    return <table>
+      <tbody>
+        {child}
+      </tbody>
+    </table>
+  }
+
+  const renderRowHorizontal = (row: any) => {
+    return row.map((element: any) => renderElement(element))
+  }
+
+  const renderRowVertical = (row: any) => {
+    let columns = []
+    for (let key of getKeys(row)) {
+      columns.push(<td key={key as string}>{key as string}</td>)
+    }
+    let rows = []
+    let idx = 0
+    for (let element of row) {
+      if (isPrimitiveElement(element)) {
+        rows.push(<tr key={element}>{renderElement(element)}</tr>)
       }
       else {
-        const columns = Object.keys(data).map(key => (<td key={key}>{key}</td>))
-        const rows = Object.keys(data).map((key:any) => {
-            if (typeof data[key] === 'object') {
-              if (Array.isArray(data[key])) {
-                return <td>{ ArrayToTable(data[key], flag)}</td>
-              }
-              else{
-                return <td key={`${key}_v`}>{JsonToTable(data[key], flag)}</td>
-              }
-            }
-            else {
-              return <td key={`${key}_v`}>{data[key]}</td>
-            }
-          }
-        )
-        return <React.Fragment>
-                <tr className="tr_columns">
-                  {columns}
-                </tr>
-                <tr>
-                  {rows}
-                </tr>
-              </React.Fragment>
-      } 
+        let values = []
+        for (let key of getKeys(row)) {
+          values.push(element[key as string])
+        }
+        rows.push(<tr key={element + idx}>{renderRowHorizontal(values)}</tr>)
+      }
+      idx += 1
     }
+    return renderTable(<React.Fragment>
+      <tr className="tr_columns">{columns}</tr>
+      {rows}
+    </React.Fragment>)
+  }
 
-    return <div>
-       <p> Vertical </p>
-        <JSONToHTMLTable data={json_data} tableClassName="table table-sm" />
-        <p> Horizontal </p>
-        <table>
-          <tbody>
-            {JsonToTable(json_data)}
-            {/* {JsonToTable(data)} */}
-          </tbody>
-        </table>
-        <p> Horizontal with Same Shape Object in Array </p>
-        <table>
-          <tbody>
-            {JsonToTable(json_data, true)}
-            {/* {JsonToTable(data)} */}
-          </tbody>
-        </table>
-    </div>
+
+  return <React.Fragment>
+    {/* {JsonToTable(data, 'vertical')} */}
+    {
+      <table>
+        <tbody>
+          <tr>
+            {renderElement(json_data)}
+            {/* {renderRowOfSameObject(row1)} */}
+          </tr>
+        </tbody>
+      </table>
+    }
+  </React.Fragment>
 }
 
 export default JsonTable
